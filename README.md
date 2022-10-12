@@ -7,6 +7,9 @@ For issues and enhancements you can send a PR or contact me from my Discord chan
 
 Runs at ~ 0.00 to 0.01 ms if you have more optimization suggestions feel free to reach out
 
+<br>
+Inventory is up to date with the latest qb-inventory fixes and dupe
+
 # Dependencies
 * [qbcore framework](https://github.com/qbcore-framework)
 * [qb-target](https://github.com/BerkieBb/qb-target)
