@@ -22,11 +22,11 @@ QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(sour
     local src = source
     local data = {}
     local Player = QBCore.Functions.GetPlayer(src)
-    for k, item in pairs(inventory) do
+    for _, item in pairs(inventory) do
         if item.created then
             if QBCore.Shared.Items[item.name:lower()]["decay"] ~= nil or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
                 if item.info then
-		    if type(item.info) == "string" then
+                    if type(item.info) == "string" then
                         item.info = {}
                     end
                     if item.info.quality == nil then
@@ -45,45 +45,115 @@ QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(sour
                     item.info = {quality = quality}
                 end
             else
-                if item.info then 
+                if item.info then
                     item.info.quality = 100
                 else
                     local info = {quality = 100}
-                    item.info = info 
+                    item.info = info
                 end
             end
         end
     end
     if other then
-        for k, item in pairs(other["inventory"]) do
-            if item.created then
-                if QBCore.Shared.Items[item.name:lower()]["decay"] ~= nil or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
-                    if item.info then 
-                        if item.info.quality == nil then
-                            item.info.quality = 100
-                        end
-                    else
-                        local info = {quality = 100}
-                        item.info = info
-                    end
-                    local quality = ConvertQuality(item)
-                    if item.info.quality then
-                        if quality < item.info.quality then
-                            item.info.quality = quality
-                        end
-                    else
-                        item.info = {quality = quality}
-                    end
-                else
-                    if item.info then 
-                        item.info.quality = 100
-                    else
-                        local info = {quality = 100}
-                        item.info = info 
-                    end
-                end
-            end
-        end
+		local inventoryType = QBCore.Shared.SplitStr(other.name, "-")[1]
+		local uniqueId = QBCore.Shared.SplitStr(other.name, "-")[2]
+		if inventoryType == "trunk" then
+			for _, item in pairs(other.inventory) do
+				if item.created then
+					if QBCore.Shared.Items[item.name:lower()]["decay"] ~= nil or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
+						if item.info then
+							if item.info.quality == nil then
+								item.info.quality = 100
+							end
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+						local quality = ConvertQuality(item)
+                    	if item.info.quality then
+							if quality < item.info.quality then
+								item.info.quality = quality
+							end
+						else
+							item.info = {quality = quality}
+						end
+					else
+						if item.info then
+							item.info.quality = 100
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+					end
+				end
+			end
+			Trunks[uniqueId].items = other.inventory
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+		elseif inventoryType == "glovebox" then
+			for _, item in pairs(other.inventory) do
+				if item.created then
+					if QBCore.Shared.Items[item.name:lower()]["decay"] ~= nil or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
+						if item.info then
+							if item.info.quality == nil then
+								item.info.quality = 100
+							end
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+						local quality = ConvertQuality(item)
+                    	if item.info.quality then
+							if quality < item.info.quality then
+								item.info.quality = quality
+							end
+						else
+							item.info = {quality = quality}
+						end
+					else
+						if item.info then
+							item.info.quality = 100
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+					end
+				end
+			end
+			Gloveboxes[uniqueId].items = other.inventory
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+		elseif inventoryType == "stash" then
+			for _, item in pairs(other.inventory) do
+				if item.created then
+					if QBCore.Shared.Items[item.name:lower()]["decay"] ~= nil or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
+						if item.info then
+							if item.info.quality == nil then
+								item.info.quality = 100
+							end
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+						local quality = ConvertQuality(item)
+                    	if item.info.quality then
+							if quality < item.info.quality then
+								item.info.quality = quality
+							end
+						else
+							item.info = {quality = quality}
+						end
+					else
+						if item.info then
+							item.info.quality = 100
+						else
+							local info = {quality = 100}
+							item.info = info
+						end
+					end
+				end
+			end
+			Stashes[uniqueId].items = other.inventory
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+		end
     end
     Player.Functions.SetInventory(inventory)
     TriggerClientEvent("inventory:client:UpdatePlayerInventory", Player.PlayerData.source, false)
