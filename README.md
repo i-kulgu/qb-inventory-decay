@@ -1,5 +1,3 @@
-![LJ Inventory](https://user-images.githubusercontent.com/91661118/146313051-665337bf-ed92-4ed0-bbb9-6ee9613f670d.png)
-
 # qb-inventory with decay system and lj-inventory look
 
 For issues and enhancements you can send a PR or contact me from my Discord channel!
