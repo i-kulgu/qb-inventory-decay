@@ -451,16 +451,16 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
         QBCore.Functions.TriggerCallback('inventory:server:ConvertQuality', function(data)
             inventory = data.inventory
             other = data.other
-        SendNUIMessage({
-            action = "open",
-            inventory = inventory,
-            slots = Config.MaxInventorySlots,
-            other = other,
-            maxweight = Config.MaxInventoryWeight,
-            Ammo = PlayerAmmo,
-            maxammo = Config.MaximumAmmoValues,
-        })
-        inInventory = true
+            SendNUIMessage({
+                action = "open",
+                inventory = inventory,
+                slots = Config.MaxInventorySlots,
+                other = other,
+                maxweight = Config.MaxInventoryWeight,
+                Ammo = PlayerAmmo,
+                maxammo = Config.MaximumAmmoValues,
+            })
+            inInventory = true
         end,inventory,other)
     end
 end)
@@ -956,6 +956,38 @@ RegisterNUICallback("GiveItem", function(data, cb)
     end
     cb('ok')
 end)
+
+-- RegisterNUICallback('GetNearPlayers', function(data,cb)
+--     local nearbyList = {}
+--     local playerfound = false
+--     local inventorydata = data
+--     for _, v in pairs(QBCore.Functions.GetPlayersFromCoords(GetEntityCoords(PlayerPedId()), 15)) do
+--         local dist = #(GetEntityCoords(GetPlayerPed(v)) - GetEntityCoords(PlayerPedId()))
+--         local fname = QBCore.Functions.GetPlayerData(v).charinfo.firstname .." " .. QBCore.Functions.GetPlayerData(v).charinfo.lastname
+--         local text = fname .. ' ('..math.floor(dist+0.05)..'m)'
+--         if v ~= PlayerId() then
+--             playerfound = true
+--             nearbyList[#nearbyList+1] = { ped = v, name = fname, text = text }
+--         end
+--     end
+--     if not playerfound then
+--         QBCore.Functions.Notify('There is no one nearby', 'error', 4500)
+--     else
+--         inventory = data.inventory
+--         other = data.other
+--         SendNUIMessage({
+--             action = "NearPlayers",
+--             inventory = inventory,
+--             slots = Config.MaxInventorySlots,
+--             other = other,
+--             maxweight = Config.MaxInventoryWeight,
+--             Ammo = PlayerAmmo,
+--             maxammo = Config.MaximumAmmoValues,
+--         })
+--         inInventory = true
+--     end
+--     cb('ok')
+-- end)
 
 --#endregion NUI
 

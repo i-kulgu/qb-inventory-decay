@@ -37,7 +37,7 @@ p { margin: 0 !important; }
 }
 
 .brand-logo {
-    position: relative; 
+    position: relative;
     left: 50%;
     transform: translateX(-50%);
     padding-top: 3px;
@@ -1124,4 +1124,25 @@ body {
 
 .weapon-attachments-back:hover {
     background-color: rgb(18, 18, 18);
+}
+
+.nearbyPlayerButton {
+    width: 100%;
+    margin-top: 5px;
+    display: block;
+    text-decoration: none;
+    padding: 2px;
+    color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(63, 57, 83, 0.226);
+    text-shadow: none;
+    font-size: 14px !important;
+    outline: none;
+    text-transform: none;
+    text-align: center;
+    line-height: 30px;
+    border: none;
+}
+
+.nearbyPlayerButton:hover {
+    background-color: rgba(34, 29, 46, 0.8);
 }

@@ -716,7 +716,7 @@ function handleDragDrop() {
                         .html(
                             itemData.amount +
                             " " +
-                            
+
                             " "
                         );
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
@@ -738,7 +738,7 @@ function handleDragDrop() {
                         .html(
                             itemData.amount +
                             " " +
-                            
+
                             " "
                         );
                     if ($(this).parent().attr("data-inventory") == "hotbar") {
@@ -776,7 +776,7 @@ function handleDragDrop() {
                         .html(
                             dragAmount +
                             " " +
-                            
+
                             " "
                         );
                     $(".ui-draggable-dragging").find(".item-slot-key").remove();
@@ -794,7 +794,7 @@ function handleDragDrop() {
                     .html(
                         itemData.amount +
                         " " +
-                        
+
                         " "
                     );
                 InventoryError($(this).parent(), $(this).attr("data-slot"));
@@ -1327,7 +1327,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
             newData.useable = toData.useable;
             newData.unique = toData.unique;
             newData.slot = parseInt($toSlot);
-          
+
             if (newData.name == fromData.name) {
                 if (newData.info.quality !== fromData.info.quality  ) {
                     InventoryError($fromInv, $fromSlot);
@@ -1339,7 +1339,7 @@ function swap($fromSlot, $toSlot, $fromInv, $toInv, $toAmount) {
                         })
                     );
                     return;
-                
+
                 }
             }
 
@@ -3048,6 +3048,28 @@ var requiredItemOpen = false;
         }
     };
 
+    // Inventory.NearPlayers = function(data) {
+    //     $("#nearPlayers").html("");
+
+    //     $.each(data.players, function (index, player) {
+    //         $("#nearPlayers").append('<button class="nearbyPlayerButton" data-player="' + player.player + '">ID ' + player.player + '</button>');
+    //     });
+    //     $("#dialog").dialog("open");
+    //     $(".nearbyPlayerButton").click(function () {
+    //         $("#dialog").dialog("close");
+    //         player = $(this).data("player");
+    //         $.post("http://qb-inventory/GiveItem",
+    //             JSON.stringify({
+    //                 inventory: data.fromInventory,
+    //                 item: data.fromData,
+    //                 amount: parseInt(data.amount),
+    //                 player: player,
+    //             })
+    //         );
+    //     });
+    // };
+
+
     window.onload = function(e) {
         window.addEventListener("message", function(event) {
             switch (event.data.action) {
@@ -3069,6 +3091,9 @@ var requiredItemOpen = false;
                 case "toggleHotbar":
                     Inventory.ToggleHotbar(event.data);
                     break;
+                // case "NearPlayers":
+                //     Inventory:NearPlayers(event.data)
+                //     break
                 case "RobMoney":
                     $(".inv-options-list").append(
                         '<div class="inv-option-item" id="rob-money"><p>TAKE MONEY</p></div>'
@@ -3114,5 +3139,13 @@ $("#item-give").droppable({
                 amount: parseInt(amount),
             })
         );
+        // $.post(
+        //     "https://qb-inventory/GetNearPlayers",
+        //     JSON.stringify({
+        //         inventory: fromInventory,
+        //         item: fromData,
+        //         amount: parseInt(amount),
+        //     })
+        // );
     },
 });
