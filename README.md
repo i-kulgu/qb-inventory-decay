@@ -32,16 +32,19 @@ you need to add a decay and created value in your qb-core/shared/items for all i
 <br>
 
 ```lua
-["created"] = nil, ["decay"] = 28.0 -- for 28 days
+-- created = this will get filled in with the time when it's created, just leave this
+-- decay = amount of days that an item will decay
+-- delete = choice whether to remove the item when it's decayed or not
+["created"] = nil, ["decay"] = 28.0, ["delete"] = true
 ```
 <br>
 Example:
 <br>
 
 ```lua
-['sandwich'] = {['name'] = 'sandwich', ['label'] = 'Sandwich', ['weight'] = 200, ['type'] = 'item', ['image'] = 'sandwich.png', ['unique'] = false, ['useable'] = true, ['shouldClose'] = true,	['combinable'] = nil, ['description'] = 'Nice bread for your stomach', ["created"] = nil, ["decay"] = 3.0},
+['sandwich'] = {['name'] = 'sandwich', ['label'] = 'Sandwich', ['weight'] = 200, ['type'] = 'item', ['image'] = 'sandwich.png', ['unique'] = false, ['useable'] = true, ['shouldClose'] = true,	['combinable'] = nil, ['description'] = 'Nice bread for your stomach', ["created"] = nil, ["decay"] = 3.0, ["delete"] = true},
 ```
-In this example our sandwich will decay in 3 days.
+In this example our sandwich will decay in 3 days and removed when used.
 <br>
 
 # Previews

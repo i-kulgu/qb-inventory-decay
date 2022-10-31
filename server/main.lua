@@ -1505,7 +1505,11 @@ RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 					UseItem(itemData.name, src, itemData)
 					TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 				else
-					TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
+					if itemData.info.delete and RemoveItem(src,itemData.name,1,slot) then
+						TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[itemData.name], "remove")
+					else
+						TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
+					end
 				end
 			else
 				UseItem(itemData.name, src, itemData)
@@ -1524,8 +1528,14 @@ RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 			if itemData.type ~= "weapon" then
 				if itemData.info.quality then
 					if itemData.info.quality <= 0 then
-						TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
-						return
+						if itemData.info.delete and RemoveItem(src,itemData.name,1,item.slot) then
+							TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
+							TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[itemData.name], "remove")
+							return
+						else
+							TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
+							return
+						end
 					end
 				end
 			end
