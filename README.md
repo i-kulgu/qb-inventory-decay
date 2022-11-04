@@ -14,11 +14,7 @@ Inventory is up to date with the latest qb-inventory fixes and dupe
 * [qbcore framework](https://github.com/qbcore-framework)
 * [qb-target](https://github.com/BerkieBb/qb-target)
 * [qb-core](https://github.com/qbcore-framework/qb-core)
-* [qb-logs](https://github.com/qbcore-framework/qb-logs)
-* [qb-traphouse](https://github.com/qbcore-framework/qb-traphouse)
-* [qb-radio](https://github.com/qbcore-framework/qb-radio)
-* [qb-drugs](https://github.com/qbcore-framework/qb-drugs)
-* [qb-shops](https://github.com/qbcore-framework/qb-shops)
+
 
 # How to install
 * Download source files from github
