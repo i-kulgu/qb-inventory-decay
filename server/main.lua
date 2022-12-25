@@ -1393,13 +1393,13 @@ RegisterNetEvent('QBCore:Server:UpdateObject', function()
     QBCore = exports['qb-core']:GetCoreObject()
 end)
 
-RegisterNetEvent('inventory:server:addTrunkItems', function()
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
 	--print('inventory:server:addTrunkItems has been deprecated please use exports[\'lj-inventory\']:addTrunkItems(plate, items)')
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end)
 
-RegisterNetEvent('inventory:server:addGloveboxItems', function()
+RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
 	--print('inventory:server:addGloveboxItems has been deprecated please use exports[\'lj-inventory\']:addGloveboxItems(plate, items)')
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
