@@ -1505,8 +1505,8 @@ RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 					UseItem(itemData.name, src, itemData)
 					TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "use")
 				else
-					if itemData.info.delete and RemoveItem(src,itemData.name,1,slot) then
-						TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[itemData.name], "remove")
+					if itemInfo['delete'] and RemoveItem(src,itemData.name,1,slot) then
+						TriggerClientEvent('inventory:client:ItemBox',src, itemInfo, "remove")
 					else
 						TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
 					end
@@ -1525,12 +1525,13 @@ RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	if inventory == "player" or inventory == "hotbar" then
 		local itemData = Player.Functions.GetItemBySlot(item.slot)
 		if itemData then
+			local itemInfo = QBCore.Shared.Items[itemData.name]
 			if itemData.type ~= "weapon" then
 				if itemData.info.quality then
 					if itemData.info.quality <= 0 then
-						if itemData.info.delete and RemoveItem(src,itemData.name,1,item.slot) then
+						if itemInfo['delete'] and RemoveItem(src,itemData.name,1,item.slot) then
 							TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
-							TriggerClientEvent('inventory:client:ItemBox',src, QBCore.Shared.Items[itemData.name], "remove")
+							TriggerClientEvent('inventory:client:ItemBox',src, itemInfo, "remove")
 							return
 						else
 							TriggerClientEvent("QBCore:Notify", src, "You can't use this item", "error")
