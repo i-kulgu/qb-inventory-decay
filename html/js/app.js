@@ -835,25 +835,50 @@ function handleDragDrop() {
         },
     });
 
-    $("#item-use").droppable({
-        hoverClass: "button-hover",
+    $(".item-slot").droppable({
+        hoverClass: "item-slot-hoverClass",
         drop: function(event, ui) {
             setTimeout(function() {
                 IsDragging = false;
             }, 300);
-            fromData = ui.draggable.data("item");
-            fromInventory = ui.draggable.parent().attr("data-inventory");
-            if (fromData.useable) {
-                if (fromData.shouldClose) {
-                    Inventory.Close();
+            fromSlot = ui.draggable.attr("data-slot");
+            fromInventory = ui.draggable.parent();
+            toSlot = $(this).attr("data-slot");
+            toInventory = $(this).parent();
+            toAmount = $("#item-amount").val();
+
+            var toDataUnique = toInventory.find("[data-slot=" + toSlot + "]").data("item");
+            var fromDataUnique = fromInventory.find("[data-slot=" + fromSlot + "]").data("item");
+
+            if (fromSlot == toSlot && fromInventory == toInventory) {
+                return;
+            }
+            if (toAmount >= 0) {
+                if (!toDataUnique) {
+                    if (
+                        updateweights(fromSlot, toSlot, fromInventory, toInventory, toAmount)
+                    ) {
+                        swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                    }
+                } else {
+                    if (fromDataUnique.unique == toDataUnique.unique) {
+                        if (!toDataUnique.combinable) {
+                            if (
+                                updateweights(fromSlot, toSlot, fromInventory, toInventory, toAmount)
+                            ) {
+                                swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                            }
+                        } else {
+                            swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                        }
+                    } else {
+                        if (
+                            updateweights(fromSlot, toSlot, fromInventory, toInventory, toAmount)
+                        ) {
+                            swap(fromSlot, toSlot, fromInventory, toInventory, toAmount);
+                        }
+                    }
                 }
-                $.post(
-                    "https://qb-inventory/UseItem",
-                    JSON.stringify({
-                        inventory: fromInventory,
-                        item: fromData,
-                    })
-                );
             }
         },
     });
