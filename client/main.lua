@@ -465,6 +465,16 @@ RegisterNetEvent('inventory:client:OpenInventory', function(PlayerAmmo, inventor
     end
 end)
 
+RegisterNetEvent('inventory:client:UpdateOtherInventory', function(items, isError)
+    SendNUIMessage({
+        action = "update",
+        inventory = items,
+        maxweight = Config.MaxInventoryWeight,
+        slots = Config.MaxInventorySlots,
+        error = isError,
+    })
+end)
+
 RegisterNetEvent('inventory:client:UpdatePlayerInventory', function(isError)
     SendNUIMessage({
         action = "update",
