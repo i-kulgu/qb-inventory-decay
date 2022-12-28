@@ -1717,7 +1717,6 @@ end)
 
 RegisterNetEvent('inventory:server:UseItemSlot', function(slot)
 	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
 	local itemData = GetItemBySlot(src, slot)
 	if itemData then
 		local itemInfo = QBCore.Shared.Items[itemData.name]
@@ -1755,7 +1754,6 @@ end)
 
 RegisterNetEvent('inventory:server:UseItem', function(inventory, item)
 	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
 	if inventory == "player" or inventory == "hotbar" then
 		local itemData = GetItemBySlot(src, item.slot)
 		if itemData then
