@@ -8,20 +8,6 @@ local Stashes = {}
 local ShopItems = {}
 
 --#endregion Variables
-
-local function getPlayersMe(src)
-	local ped = GetPlayerPed(src)
-	local pCoords = GetEntityCoords(ped)
-	local Players = QBCore.Functions.GetPlayers()
-	for i=1, #Players do
-		local Player = Players[i]
-		local target = GetPlayerPed(Player)
-		local tCoords = GetEntityCoords(target)
-		if target == ped or #(pCoords - tCoords) < 7 then
-			return Player
-		end
-	end
-end
 --#region Functions
 
 ---Loads the inventory for the player with the citizenid that is provided
@@ -167,7 +153,6 @@ exports("GetFirstSlotByItem", GetFirstSlotByItem)
 ---@return boolean success Returns true if the item was added, false it the item couldn't be added
 local function AddItem(source, item, amount, slot, info, created)
 	local Player = QBCore.Functions.GetPlayer(source)
-	local meThreeDee = getPlayersMe(source)
 	if not Player then return false end
 
 	local totalWeight = GetTotalWeight(Player.PlayerData.items)
@@ -199,7 +184,6 @@ local function AddItem(source, item, amount, slot, info, created)
 				Player.PlayerData.items[slot].amount = Player.PlayerData.items[slot].amount + amount
 				Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 				if Player.Offline then return true end
-				TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, source, "Grabbed "..amount.."x "..itemInfo['label'])
 				TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'AddItem', 'green', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** got item: [slot:' .. slot .. '], itemname: ' .. Player.PlayerData.items[slot].name .. ', added amount: ' .. amount .. ', new total amount: ' .. Player.PlayerData.items[slot].amount)
 				return true
 			else
@@ -208,7 +192,6 @@ local function AddItem(source, item, amount, slot, info, created)
 						Player.PlayerData.items[i] = { name = itemInfo['name'], amount = amount, info = info or '', label = itemInfo['label'], description = itemInfo['description'] or '', weight = itemInfo['weight'], type = itemInfo['type'], unique = itemInfo['unique'], useable = itemInfo['useable'], image = itemInfo['image'], shouldClose = itemInfo['shouldClose'], slot = i, combinable = itemInfo['combinable'], created = itemInfo['created'] }
 						Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 						if Player.Offline then return true end
-						TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, source, "Grabbed "..amount.."x "..itemInfo['label'])
 						TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'AddItem', 'green', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** got item: [slot:' .. i .. '], itemname: ' .. Player.PlayerData.items[i].name .. ', added amount: ' .. amount .. ', new total amount: ' .. Player.PlayerData.items[i].amount)
 						return true
 					end
@@ -219,7 +202,6 @@ local function AddItem(source, item, amount, slot, info, created)
 			Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 
 			if Player.Offline then return true end
-			TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, source, "Grabbed "..amount.."x "..itemInfo['label'])
 			TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'AddItem', 'green', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** got item: [slot:' .. slot .. '], itemname: ' .. Player.PlayerData.items[slot].name .. ', added amount: ' .. amount .. ', new total amount: ' .. Player.PlayerData.items[slot].amount)
 
 			return true
@@ -230,7 +212,6 @@ local function AddItem(source, item, amount, slot, info, created)
 					Player.Functions.SetPlayerData("items", Player.PlayerData.items)
 
 					if Player.Offline then return true end
-					TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, source, "Grabbed "..amount.."x "..itemInfo['label'])
 					TriggerEvent('qb-log:server:CreateLog', 'playerinventory', 'AddItem', 'green', '**' .. GetPlayerName(source) .. ' (citizenid: ' .. Player.PlayerData.citizenid .. ' | id: ' .. source .. ')** got item: [slot:' .. i .. '], itemname: ' .. Player.PlayerData.items[i].name .. ', added amount: ' .. amount .. ', new total amount: ' .. Player.PlayerData.items[i].amount)
 
 					return true
@@ -1066,7 +1047,6 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount, created)
 	itemAmount = tonumber(itemAmount) or 1
 	local Player = QBCore.Functions.GetPlayer(source)
 	local itemData = GetItemBySlot(source, fromSlot)
-	local meThreeDee = getPlayersMe(source)
 
 	if not itemData then return end
 
@@ -1099,7 +1079,6 @@ local function CreateNewDrop(source, fromSlot, toSlot, itemAmount, created)
 		TriggerEvent("qb-log:server:CreateLog", "drop", "New Item Drop", "red", "**".. GetPlayerName(source) .. "** (citizenid: *"..Player.PlayerData.citizenid.."* | id: *"..source.."*) dropped new item; name: **"..itemData.name.."**, amount: **" .. itemAmount .. "**")
 		TriggerClientEvent("inventory:client:DropItemAnim", source)
 		TriggerClientEvent("inventory:client:AddDropItem", -1, dropId, source, coords)
-		TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, source, "Dropped "..itemAmount.."x "..itemData.label)
 		if itemData.name:lower() == "radio" then
 			TriggerClientEvent('Radio.Set', source, false)
 		end
@@ -2392,7 +2371,6 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 	if Player == OtherPlayer then return QBCore.Functions.Notify(src, "You can\'t give yourself an item?") end
 	if dist > 2 then return QBCore.Functions.Notify(src, "You are too far away to give items!") end
 	local item = GetItemBySlot(src, slot)
-	local meThreeDee = getPlayersMe(src)
 	if not item then QBCore.Functions.Notify(src, "Item you tried giving not found!"); return end
 	if item.name ~= name then QBCore.Functions.Notify(src, "Incorrect item found try again!"); return end
 
@@ -2410,16 +2388,12 @@ RegisterServerEvent("inventory:server:GiveItem", function(target, name, amount, 
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, true)
 				TriggerClientEvent('lj-inventory:client:giveAnim', src)
 				TriggerClientEvent('lj-inventory:client:giveAnim', target)
-				TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, src, "Handing over "..amount.."x "..item.label)
-				TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, target, "Grabbed "..amount.."x "..item.label)
 			else
 				AddItem(src, item.name, amount, item.slot, item.info, item.created)
 				QBCore.Functions.Notify(src, "The other players inventory is full!", "error")
 				QBCore.Functions.Notify(target, "The other players inventory is full!", "error")
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
 				TriggerClientEvent("inventory:client:UpdatePlayerInventory", target, false)
-				TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, src, "Failed to handover ".. item.label)
-				TriggerClientEvent('QBCore:Command:ShowMe3D', meThreeDee, target, "Unsuccessful in grabbing "..amount.."x "..item.label)
 			end
 		else
 			QBCore.Functions.Notify(src,  "You do not have enough of the item", "error")
