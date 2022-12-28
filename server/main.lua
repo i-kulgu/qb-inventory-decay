@@ -2603,8 +2603,7 @@ end
 QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(source, cb, inventory, other)
     local src = source
     local data = {}
-    local Player = QBCore.Functions.GetPlayer(src)
-
+	
     for _, item in pairs(inventory) do
         if item.created then
             if QBCore.Shared.Items[item.name:lower()]["decay"] or QBCore.Shared.Items[item.name:lower()]["decay"] ~= 0 then
@@ -2671,7 +2670,7 @@ QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(sour
 				end
 			end
 			Trunks[uniqueId].items = other.inventory
-			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", src, other.inventory, false)
 		elseif inventoryType == "glovebox" then
 			for _, item in pairs(other.inventory) do
 				if item.created then
@@ -2703,7 +2702,7 @@ QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(sour
 				end
 			end
 			Gloveboxes[uniqueId].items = other.inventory
-			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", src, other.inventory, false)
 		elseif inventoryType == "stash" then
 			for _, item in pairs(other.inventory) do
 				if item.created then
@@ -2735,11 +2734,11 @@ QBCore.Functions.CreateCallback('inventory:server:ConvertQuality', function(sour
 				end
 			end
 			Stashes[uniqueId].items = other.inventory
-			TriggerClientEvent("inventory:client:UpdateOtherInventory", Player.PlayerData.source, other.inventory, false)
+			TriggerClientEvent("inventory:client:UpdateOtherInventory", src, other.inventory, false)
 		end
     end
     SetInventory(src, inventory)
-    TriggerClientEvent("inventory:client:UpdatePlayerInventory", Player.PlayerData.source, false)
+    TriggerClientEvent("inventory:client:UpdatePlayerInventory", src, false)
     data.inventory = inventory
     data.other = other
     cb(data)
