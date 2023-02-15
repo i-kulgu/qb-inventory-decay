@@ -1,4 +1,4 @@
--- Variables
+--#region Variables
 
 local QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = QBCore.Functions.GetPlayerData()
@@ -13,7 +13,6 @@ local CurrentGlovebox = nil
 local CurrentStash = nil
 local isCrafting = false
 local isHotbar = false
-local WeaponAttachments = {}
 
 --#endregion Variables
 
@@ -121,8 +120,8 @@ local function FormatWeaponAttachments(itemdata)
     itemdata.name = itemdata.name:upper()
     if itemdata.info.attachments ~= nil and next(itemdata.info.attachments) ~= nil then
         for _, v in pairs(itemdata.info.attachments) do
-            if WeaponAttachments[itemdata.name] ~= nil then
-                for key, value in pairs(WeaponAttachments[itemdata.name]) do
+            if exports['qb-weapons']:getConfigWeaponAttachments(itemdata.name) then
+                for key, value in pairs(exports['qb-weapons']:getConfigWeaponAttachments(itemdata.name)) do
                     if value.component == v.component then
                         local item = value.item
                         attachments[#attachments+1] = {
@@ -553,17 +552,20 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
     local weaponName = tostring(weaponData.name)
     local weaponHash = joaat(weaponData.name)
     if currentWeapon == weaponName then
+        TriggerEvent('weapons:client:DrawWeapon', nil)
         SetCurrentPedWeapon(ped, `WEAPON_UNARMED`, true)
         RemoveAllPedWeapons(ped, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', nil, shootbool)
         currentWeapon = nil
     elseif weaponName == "weapon_stickybomb" or weaponName == "weapon_pipebomb" or weaponName == "weapon_smokegrenade" or weaponName == "weapon_flare" or weaponName == "weapon_proxmine" or weaponName == "weapon_ball"  or weaponName == "weapon_molotov" or weaponName == "weapon_grenade" or weaponName == "weapon_bzgas" then
+        TriggerEvent('weapons:client:DrawWeapon', weaponName)
         GiveWeaponToPed(ped, weaponHash, 1, false, false)
         SetPedAmmo(ped, weaponHash, 1)
         SetCurrentPedWeapon(ped, weaponHash, true)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     elseif weaponName == "weapon_snowball" then
+        TriggerEvent('weapons:client:DrawWeapon', weaponName)
         GiveWeaponToPed(ped, weaponHash, 10, false, false)
         SetPedAmmo(ped, weaponHash, 10)
         SetCurrentPedWeapon(ped, weaponHash, true)
@@ -571,10 +573,11 @@ RegisterNetEvent('inventory:client:UseWeapon', function(weaponData, shootbool)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         currentWeapon = weaponName
     else
+        TriggerEvent('weapons:client:DrawWeapon', weaponName)
         TriggerEvent('weapons:client:SetCurrentWeapon', weaponData, shootbool)
         local ammo = tonumber(weaponData.info.ammo) or 0
 
-        if weaponName == "weapon_petrolcan" then
+        if weaponName == "weapon_petrolcan" or weaponName == "weapon_fireextinguisher" then
             ammo = 4000
         end
 
@@ -664,6 +667,7 @@ RegisterCommand('closeinv', function()
 end, false)
 
 RegisterCommand('inventory', function()
+    if IsNuiFocused() then return end
     if not isCrafting and not inInventory then
         if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
             local ped = PlayerPedId()
@@ -779,7 +783,7 @@ RegisterCommand('inventory', function()
     end
 end, false)
 
-RegisterKeyMapping('inventory', Lang:t("inf_mapping.opn_inv"), 'keyboard', 'f2')
+RegisterKeyMapping('inventory', Lang:t("inf_mapping.opn_inv"), 'keyboard', 'TAB')
 
 RegisterCommand('hotbar', function()
     isHotbar = not isHotbar
@@ -788,11 +792,11 @@ RegisterCommand('hotbar', function()
     end
 end, false)
 
-RegisterKeyMapping('hotbar', Lang:t("inf_mapping.tog_slots"), 'keyboard', 'TAB')
+RegisterKeyMapping('hotbar', Lang:t("inf_mapping.tog_slots"), 'keyboard', 'z')
 
 for i = 1, 6 do
     RegisterCommand('slot' .. i,function()
-        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() then
+        if not PlayerData.metadata["isdead"] and not PlayerData.metadata["inlaststand"] and not PlayerData.metadata["ishandcuffed"] and not IsPauseMenuActive() and not LocalPlayer.state.inv_busy then
             if i == 6 then
                 i = Config.MaxInventorySlots
             end
@@ -827,13 +831,13 @@ end)
 RegisterNUICallback('RemoveAttachment', function(data, cb)
     local ped = PlayerPedId()
     local WeaponData = QBCore.Shared.Items[data.WeaponData.name]
-    local Attachment = WeaponAttachments[WeaponData.name:upper()][data.AttachmentData.attachment]
+    local Attachment = exports['qb-weapons']:getConfigWeaponAttachments(WeaponData.name:upper())[data.AttachmentData.attachment]
     QBCore.Functions.TriggerCallback('weapons:server:RemoveAttachment', function(NewAttachments)
         if NewAttachments ~= false then
             local Attachies = {}
             RemoveWeaponComponentFromPed(ped, joaat(data.WeaponData.name), joaat(Attachment.component))
             for _, v in pairs(NewAttachments) do
-                for _, pew in pairs(WeaponAttachments[WeaponData.name:upper()]) do
+                for _, pew in pairs(exports['qb-weapons']:getConfigWeaponAttachments(WeaponData.name:upper())) do
                     if v.component == pew.component then
                         local item = pew.item
                         Attachies[#Attachies+1] = {
@@ -957,38 +961,6 @@ RegisterNUICallback("GiveItem", function(data, cb)
     cb('ok')
 end)
 
--- RegisterNUICallback('GetNearPlayers', function(data,cb)
---     local nearbyList = {}
---     local playerfound = false
---     local inventorydata = data
---     for _, v in pairs(QBCore.Functions.GetPlayersFromCoords(GetEntityCoords(PlayerPedId()), 15)) do
---         local dist = #(GetEntityCoords(GetPlayerPed(v)) - GetEntityCoords(PlayerPedId()))
---         local fname = QBCore.Functions.GetPlayerData(v).charinfo.firstname .." " .. QBCore.Functions.GetPlayerData(v).charinfo.lastname
---         local text = fname .. ' ('..math.floor(dist+0.05)..'m)'
---         if v ~= PlayerId() then
---             playerfound = true
---             nearbyList[#nearbyList+1] = { ped = v, name = fname, text = text }
---         end
---     end
---     if not playerfound then
---         QBCore.Functions.Notify('There is no one nearby', 'error', 4500)
---     else
---         inventory = data.inventory
---         other = data.other
---         SendNUIMessage({
---             action = "NearPlayers",
---             inventory = inventory,
---             slots = Config.MaxInventorySlots,
---             other = other,
---             maxweight = Config.MaxInventoryWeight,
---             Ammo = PlayerAmmo,
---             maxammo = Config.MaximumAmmoValues,
---         })
---         inInventory = true
---     end
---     cb('ok')
--- end)
-
 --#endregion NUI
 
 --#region Threads
@@ -1074,66 +1046,66 @@ CreateThread(function()
     end
 end)
 
--- CreateThread(function()
---     if Config.UseTarget then
---         exports['qb-target']:AddTargetModel(Config.CraftingObject, {
---             options = {
---                 {
---                     event = "inventory:client:craftTarget",
---                     icon = "fas fa-tools",
---                     label = Lang:t("menu.craft"),
---                 },
---             },
---             distance = 2.5,
---         })
---     else
---         while true do
---             local sleep = 1000
---             if LocalPlayer.state['isLoggedIn'] then
---                 local pos = GetEntityCoords(PlayerPedId())
---                 local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
---                 if craftObject ~= 0 then
---                     local objectPos = GetEntityCoords(craftObject)
---                     if #(pos - objectPos) < 1.5 then
---                         sleep = 0
---                         DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, Lang:t("interaction.craft"))
---                         if IsControlJustReleased(0, 38) then
---                             local crafting = {}
---                             crafting.label = Lang:t("label.craft")
---                             crafting.items = GetThresholdItems()
---                             TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
---                             sleep = 100
---                         end
---                     end
---                 end
---             end
---             Wait(sleep)
---         end
---     end
--- end)
+CreateThread(function()
+    if Config.UseTarget then
+        exports['qb-target']:AddTargetModel(Config.CraftingObject, {
+            options = {
+                {
+                    event = "inventory:client:craftTarget",
+                    icon = "fas fa-tools",
+                    label = Lang:t("menu.craft"),
+                },
+            },
+            distance = 2.5,
+        })
+    else
+        while true do
+            local sleep = 1000
+            if LocalPlayer.state['isLoggedIn'] then
+                local pos = GetEntityCoords(PlayerPedId())
+                local craftObject = GetClosestObjectOfType(pos, 2.0, Config.CraftingObject, false, false, false)
+                if craftObject ~= 0 then
+                    local objectPos = GetEntityCoords(craftObject)
+                    if #(pos - objectPos) < 1.5 then
+                        sleep = 0
+                        DrawText3Ds(objectPos.x, objectPos.y, objectPos.z + 1.0, Lang:t("interaction.craft"))
+                        if IsControlJustReleased(0, 38) then
+                            local crafting = {}
+                            crafting.label = Lang:t("label.craft")
+                            crafting.items = GetThresholdItems()
+                            TriggerServerEvent("inventory:server:OpenInventory", "crafting", math.random(1, 99), crafting)
+                            sleep = 100
+                        end
+                    end
+                end
+            end
+            Wait(sleep)
+        end
+    end
+end)
 
--- CreateThread(function()
---     while true do
---         local sleep = 1000
---         if LocalPlayer.state['isLoggedIn'] then
---             local pos = GetEntityCoords(PlayerPedId())
---             local distance = #(pos - Config.AttachmentCraftingLocation)
---             if distance < 10 then
---                 if distance < 1.5 then
---                     sleep = 0
---                     DrawText3Ds(Config.AttachmentCraftingLocation.x, Config.AttachmentCraftingLocation.y, Config.AttachmentCraftingLocation.z, Lang:t("interaction.craft"))
---                     if IsControlJustPressed(0, 38) then
---                         local crafting = {}
---                         crafting.label = Lang:t("label.a_craft")
---                         crafting.items = GetAttachmentThresholdItems()
---                         TriggerServerEvent("inventory:server:OpenInventory", "attachment_crafting", math.random(1, 99), crafting)
---                         sleep = 100
---                     end
---                 end
---             end
---         end
---         Wait(sleep)
---     end
--- end)
+CreateThread(function()
+    while true do
+        local sleep = 1000
+        if LocalPlayer.state['isLoggedIn'] then
+            local pos = GetEntityCoords(PlayerPedId())
+            local distance = #(pos - Config.AttachmentCraftingLocation)
+            if distance < 10 then
+                if distance < 1.5 then
+                    sleep = 0
+                    DrawText3Ds(Config.AttachmentCraftingLocation.x, Config.AttachmentCraftingLocation.y, Config.AttachmentCraftingLocation.z, Lang:t("interaction.craft"))
+                    if IsControlJustPressed(0, 38) then
+                        local crafting = {}
+                        crafting.label = Lang:t("label.a_craft")
+                        crafting.items = GetAttachmentThresholdItems()
+                        TriggerServerEvent("inventory:server:OpenInventory", "attachment_crafting", math.random(1, 99), crafting)
+                        sleep = 100
+                    end
+                end
+            end
+        end
+        Wait(sleep)
+    end
+end)
 
 --#endregion Threads
