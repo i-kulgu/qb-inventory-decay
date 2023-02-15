@@ -49,9 +49,7 @@ In this example our sandwich will decay in 3 days and removed when used.
 <br>
 
 # Credits
-* [original version](https://github.com/ihyajb/aj-inventory)
-* [lj-inventory](https://github.com/loljoshie/lj-inventory)
-* [aroma-inventory](https://github.com/Lvthannn/aroma-inventory)
+* [qb-inventory](https://github.com/qbcore-framework/qb-inventory)
 * [qb-inventory-withdecay](https://github.com/HarithMichael/qb-inventory-withdecay)
 
 <br>
