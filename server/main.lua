@@ -1382,12 +1382,14 @@ function addTrunkItems(plate, items)
 	Trunks[plate] = {}
 	Trunks[plate].items = items
 end
+
 exports('addTrunkItems',addTrunkItems)
 
 function addGloveboxItems(plate, items)
 	Gloveboxes[plate] = {}
 	Gloveboxes[plate].items = items
 end
+
 exports('addGloveboxItems',addGloveboxItems)
 
 RegisterNetEvent('inventory:server:combineItem', function(item, fromItem, toItem)
@@ -2389,11 +2391,12 @@ RegisterNetEvent('inventory:server:snowball', function(action)
 	end
 end)
 
-RegisterNetEvent('inventory:server:addTrunkItems', function()
-	print('inventory:server:addTrunkItems has been deprecated please use exports[\'qb-inventory\']:addTrunkItems(plate, items)')
+RegisterNetEvent('inventory:server:addTrunkItems', function(plate, items)
+	addTrunkItems(plate, items)
 end)
-RegisterNetEvent('inventory:server:addGloveboxItems', function()
-	print('inventory:server:addGloveboxItems has been deprecated please use exports[\'qb-inventory\']:addGloveboxItems(plate, items)')
+
+RegisterNetEvent('inventory:server:addGloveboxItems', function(plate, items)
+	addGloveboxItems(plate, items)
 end)
 
 --#endregion Events
