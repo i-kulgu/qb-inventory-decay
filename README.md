@@ -1,5 +1,7 @@
 # qb-inventory with decay system and lj-inventory look
 
+If you like my work and want to support me : [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F2F3EU9ME)
+
 For issues and enhancements you can send a PR or contact me from my Discord channel!
 <br>
 [Team Hi-Dev](https://discord.com/invite/pSJPPctrNx)
